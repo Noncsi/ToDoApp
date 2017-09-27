@@ -1,0 +1,28 @@
+﻿<div class="grid">
+    <!-- LIST CONTAINER -->
+    <div class="page-title">Let's do this</div>
+    <div class="todolist-container">
+        <button class ="new-todolist" id="new-tododlist" onclick="document.getElementById('new-todolist-title-input').style.display='block'">New List</button>
+    </div>
+    <!-- LIST -->
+    <div class="opened-todo">
+        <div id="header-element" class="header">
+            <h2 class="todolist-title">Untitled list</h2>
+            <input type="text" id="input" placeholder="I have to...">
+            <h4 id="flash-message">You have to write something to add a task!</h4>
+        </div>
+        <div id="add-btn-container"><button onclick="AddNewTask()" class="btn">Add</button></div>
+        <ul id="list-of-tasks"></ul>
+    </div>
+    <!-- MODAL -->
+    <div id="new-todolist-title-input"  class="w3-modal">
+        <div class="w3-modal-content w3-animate-top">
+            <div class="w3-container">
+                <span onclick="document.getElementById('new-todolist-title-input').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+                <p>Enter the title of your list</p>
+                <input type="text" id="title-input" placeholder="Title">
+                <button class="btn" id="add-title-btn">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
