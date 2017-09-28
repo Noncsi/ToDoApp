@@ -1,7 +1,9 @@
 ﻿<div class="grid">
+    <div id="empty-left-side"></div>
     <!-- LIST CONTAINER -->
     <div class="page-title">Let's do this</div>
     <div class="todolist-container">
+        <div class="todolist-container-title">Your lists</div>
         <button class ="new-todolist" id="new-tododlist" onclick="document.getElementById('new-todolist-title-input').style.display='block'">New List</button>
     </div>
     <!-- LIST -->
@@ -13,17 +15,18 @@
         </div>
         <div id="add-btn-container"><button class="btn">Add</button></div>
         <ul id="list-of-tasks"></ul>
-        <button id="delete-list">Delete list</button>
+        <div id="delete-btn-container"><button id="delete-list" class="delete-list-btn">Delete list</button></div>
     </div>
     <!-- MODAL -->
     <div id="new-todolist-title-input"  class="w3-modal">
         <div class="w3-modal-content w3-animate-top">
             <div class="w3-container">
                 <span onclick="document.getElementById('new-todolist-title-input').style.display='none'" class="w3-button w3-display-topright">&times;</span>
-                <p>Enter the title of your list</p>
+                <p class="modal-title">Enter the title of your list</p>
                 <input type="text" id="title-input" placeholder="Title">
-                <button class="btn" id="add-title-btn">Ok</button>
+                <div id="add-list-btn-container"><button class="btn" id="add-title-btn">Ok</button></div>
             </div>
         </div>
     </div>
+    <div id="empty-right-side"></div>
 </div>

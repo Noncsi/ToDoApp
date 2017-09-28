@@ -1,42 +1,52 @@
 ﻿$("#flash-message").hide();
 $(".opened-todo").hide();
-var todolist_id = 0;
-var opened_list_id;
+var opened_list_name;
+
+function GetListData() {
+    var getList = localStorage.getItem(opened_list_name);
+    var list = JSON.parse(getList);
+    return list;
+}
 
 // load all list
 $(document).ready(function () {
-    for (var i = 1; i <= localStorage.length; i++) {
-        var getList = localStorage.getItem("todolist" + i);
-        if (getList != null) {
-            var list = JSON.parse(getList); 
-            $(".todolist-container").append("<button class='todolist' id='todolist" + i + "'>" + list.title + "</button>");
-            todolist_id = i;
-        }       
+    for (var key in localStorage) {
+        $(".todolist-container").append("<button class='todolist'>" + key + "</button>");    
     }
 })
 
 // add new list
-$("#add-title-btn").click(function () {
-    todolist_id++;
-    $(".todolist-container").append("<button class='todolist' id='todolist" + (todolist_id) + "'>" + $("#title-input").val() + "</button>");
-    $('#new-todolist-title-input').hide();
-    var new_list = { 'title': $("#title-input").val(), 'tasks': [] };
-    localStorage.setItem("todolist" + todolist_id, JSON.stringify(new_list));
-    $('#title-input').val(""); 
+$("#add-title-btn").click(function () {   
+    var new_list = { 'tasks': [] };
+    if ($("#title-input").val() == "") {
+        $("#title-input").attr('placeholder', "Don't leave me blank!");
+    } else {
+        localStorage.setItem($("#title-input").val(), JSON.stringify(new_list));
+        $(".todolist-container").append("<button class='todolist'>" + $("#title-input").val() + "</button>");
+        $('#title-input').val("");
+        $("#title-input").attr('placeholder', "Title");
+        $('#new-todolist-title-input').hide();
+    }
+
 })
 
 //open list
 $(".todolist-container").on("click", ".todolist", function () {
+    $('.todolist').removeAttr('id');
+    $(this).attr('id', 'opened');
     $('#list-of-tasks').empty();
     // get the right list
-    var getList = localStorage.getItem($(this).attr('id'));
-    var list = JSON.parse(getList);
-    // set it global to make it clear what is showing
-    opened_list_id = $(this).attr('id');
-    $('.todolist-title').text(list.title);
+    opened_list_name = $(this).html();
+    var list = GetListData();
+    $('.todolist-title').text(opened_list_name);
     $('.opened-todo').show();
     for (var i = 0; i < list.tasks.length; i++) {
-        $('#list-of-tasks').append("<li>" + list.tasks[i].value + "<span class='delete'>\u00D7</span></li>");    
+        $('#list-of-tasks').append("<li>" + list.tasks[i].value + "<span class='delete'>\u00D7</span></li>");
+        if (list.tasks[i].status == "done") {
+            $('li').eq(i).addClass('completed-task');
+
+
+        }
     }
 })
 
@@ -49,13 +59,9 @@ $("#add-btn-container").click(function () {
             }, 3000);
         });
     } else { // add task and empty input
-        // get the right list
-        var getList = localStorage.getItem(opened_list_id);
-        var list = JSON.parse(getList);
-        // push new task into list
-        list.tasks.push({ "value": $("#input").val(), "status": "incomplete" });
-        // set it in the localstorage
-        localStorage.setItem(opened_list_id, JSON.stringify(list));
+        var list = GetListData();
+        list.tasks.push({ "value": $("#input").val(), "status": "undone" });
+        localStorage.setItem(opened_list_name, JSON.stringify(list));
         $("#list-of-tasks").append("<li>" + $("#input").val() + "<span class='delete'>\u00D7</span></li>");
         $("#input").val("");
     }
@@ -63,36 +69,42 @@ $("#add-btn-container").click(function () {
 
 // delete list
 $("#delete-list").click( function () {
-    $("#" + opened_list_id).remove();
-    localStorage.removeItem(opened_list_id);
-    $(this.parentElement).hide();  
+    $("#opened").remove();
+    localStorage.removeItem(opened_list_name);
+    $(this.parentElement.parentElement).hide();  
 });
 
 // delete task
 $("ul").on("click", ".delete", function () {
-    var getList = localStorage.getItem(opened_list_id);
-    var list = JSON.parse(getList);
-    $(this.parentElement).remove();
+    var list = GetListData();
     for (var i = 0; i < list.tasks.length; i++) {
-        if (list.tasks[i].value === $(this.parentElement).val()) {
-            localStorage.removeItem(list.tasks[i]);
+        if (list.tasks[i].value + "\u00D7" == $(this.parentElement).text()) {
+            list.tasks.splice(i, 1);
+            localStorage.setItem(opened_list_name, JSON.stringify(list));
+            $(this.parentElement).remove();
         }       
-    }   
+    } 
 });
 
 // set the task status to completed
 $("ul").on("click", "li", function () {
-    var clear_val;
+    var list = GetListData();
     if ($(this).hasClass("completed-task")) {
         $(this).removeClass('completed-task');
-        $(this).val("");
-        $(this).val(clear_val);
+        for (var i = 0; i < list.tasks.length; i++) {
+            if (list.tasks[i].value + "\u00D7" == $(this).text()) {
+                list.tasks[i].status = "undone";
+                localStorage.setItem(opened_list_name, JSON.stringify(list));
+            }
+        }
     } else {
-        clear_val = $(this).val();
         $(this).addClass("completed-task");
-        $(this).prepend("Done: ");
+        for (var i = 0; i < list.tasks.length; i++) {
+            if (list.tasks[i].value + "\u00D7" == $(this).text()) {
+                list.tasks[i].status = "done";
+                 localStorage.setItem(opened_list_name, JSON.stringify(list));
+            }
+        }
     }
-    
-    
-    //$(this).prepend('\u2713 ');   
-});
+})
+
